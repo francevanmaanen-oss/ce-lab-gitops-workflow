@@ -8,7 +8,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket       = "ce-bootcamp-tfstate-fvanmaanen"
+    bucket       = "ce-bootcamp-tfstate-francevanmaanen-gitops"
     region       = "us-east-1"
     use_lockfile = true
     encrypt      = true
