@@ -8,7 +8,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket       = "ce-bootcamp-tfstate-francevanmaanen-gitops"
+    bucket       = "ce-bootcamp-tfstate-francevanmaanen-gitops-backend"
     region       = "us-east-1"
     use_lockfile = true
     encrypt      = true
@@ -21,7 +21,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "data" {
-  bucket = "${var.project_name}-${var.environment}-data-store"
+  bucket = "${var.project_name}-${var.environment}-data-store-francevanmaanen-gitops"
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-data-store"
