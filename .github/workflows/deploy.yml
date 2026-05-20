@@ -1,0 +1,56 @@
+name: GitOps Deploy
+ 
+on:
+  push:
+    branches:
+      - main
+      - develop
+ 
+permissions:
+  contents: read
+ 
+env:
+  TF_VERSION: "1.6.0"
+ 
+jobs:
+  deploy:
+    name: Deploy to ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+ 
+    env:
+      TARGET_ENV: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+ 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+ 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+ 
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="key=m5-03-gitops/${TARGET_ENV}/terraform.tfstate"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+ 
+      - name: Terraform Plan
+        run: |
+          terraform plan \
+            -var-file=environments/${TARGET_ENV}/terraform.tfvars \
+            -input=false \
+            -no-color \
+            -out=tfplan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+ 
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false tfplan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
