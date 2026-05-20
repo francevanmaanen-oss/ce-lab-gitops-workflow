@@ -8,10 +8,10 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "ce-bootcamp-tfstate-francevanmaanen-gitops"
-    region         = "us-east-1"
-    dynamodb_table = "terraform-locks"
-    encrypt        = true
+    bucket       = "ce-bootcamp-tfstate-fvanmaanen"
+    region       = "us-east-1"
+    use_lockfile = true
+    encrypt      = true
     # key is set dynamically via -backend-config in the workflow
   }
 }
